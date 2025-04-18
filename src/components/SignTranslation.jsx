@@ -1,15 +1,16 @@
-const SignTranslation = ({ prediction = {}, confidenceThreshold = 30 }) => {
-  const confidence = Math.round(prediction.confidence || 0);
-  const label = confidence >= confidenceThreshold 
-    ? prediction.label 
-    : "No sign detected";
+const confidenceThreshold = 60;
 
-  // Dynamic progress bar color based on confidence level
-  const getProgressColor = (conf) => {
-    if (conf >= 80) return "bg-green-500"; // High confidence
-    if (conf >= 50) return "bg-yellow-500"; // Medium confidence
-    return "bg-red-500"; // Low confidence
-  };
+const getProgressColor = (confidence) => {
+  if (confidence > 80) return "bg-green-500";
+  if (confidence > 50) return "bg-yellow-500";
+  return "bg-red-500";
+};
+
+const SignTranslation = ({ prediction = {} }) => {
+  const confidence = Math.round((prediction.confidence || 0) * 100);
+  const label = confidence >= confidenceThreshold
+    ? prediction.translation
+    : "No sign detected";
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 space-y-6">
@@ -21,14 +22,14 @@ const SignTranslation = ({ prediction = {}, confidenceThreshold = 30 }) => {
           </p>
         </div>
       </div>
-      
+
       <div className="space-y-2">
         <div className="flex justify-between items-center">
           <span className="text-sm font-medium text-gray-600">Confidence</span>
           <span className="text-sm font-medium text-blue-600">{confidence}%</span>
         </div>
         <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-          <div 
+          <div
             className={`h-full ${getProgressColor(confidence)} rounded-full transition-all duration-300`}
             style={{ width: `${confidence}%` }}
           ></div>
